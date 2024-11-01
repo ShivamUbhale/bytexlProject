@@ -1,2 +1,2 @@
 ## FOR DOCUMENTATION
-https://github.com/ShivamUbhale/bytexlProject.wiki.git
+https://github.com/ShivamUbhale/bytexlProject/wiki
