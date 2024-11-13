@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile Page</title>
+    <style>
+           body {
+    font-family: Arial, sans-serif;
+    background: linear-gradient(45deg, #ff5f7e, #ff9966, #ffcc66, #66ccff, #9b66ff);
+    background-size: 400% 400%;
+    animation: gradientAnimation 8s ease infinite;
+    margin: 0;
+    padding: 0;
+    color: #333;
+}
+
+@keyframes gradientAnimation {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+        .container {
+            width: 80%;
+            margin: 40px auto;
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+        }
+        h2 {
+            text-align: center;
+            color: #ff6f61; /* Light green */
+            font-size: 28px;
+        }
+        .profile-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .profile-photo {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #ff6f61 /* Green accent */
+        }
+        .form-section {
+            width: 100%;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        label {
+            font-weight: bold;
+            color: #333;
+        }
+        input[type="text"], input[type="email"], textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ff6f61; /* Green border */
+            border-radius: 6px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        input[type="text"]:focus, input[type="email"]:focus, textarea:focus {
+            border-color: #ff6f61; /* Darker green on focus */
+        }
+        input[type="file"] {
+            margin-top: 10px;
+        }
+        button {
+            background: linear-gradient(90deg, #ff6f61, #ffb74d, #81c784, #4db6ac, #64b5f6);
+            color: white;
+            padding: 12px;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: opacity 0.3s;
+        }
+        button:hover {
+            opacity: 0.9;
+        }
+        .song-list {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .song-card {
+            background-color: #f1f8e9;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+            padding: 15px;
+            text-align: center;
+        }
+        .song-card input {
+            width: 100%;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            padding: 8px;
+            font-size: 14px;
+        }
+        .dashboard-link {
+            text-align: center;
+            margin-top: 30px;
+        }
+        .dashboard-link a {
+            color: #ff6f61;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .dashboard-link a:hover {
+            text-decoration: underline;
+        }
+        .logout {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .logout-button {
+            color: #ff6f61;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .logout-button:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Your Profile</h2>
+
+        <div class="profile-section">
+            <img class="profile-photo" src="{{ url_for('uploaded_file', filename=user['photo1']) }}" alt="Profile Photo">
+        </div>
+
+        <div class="form-section">
+            <form action="/profile" method="POST" enctype="multipart/form-data">
+                <div>
+                    <label for="username">Username:</label>
+                    <input type="text" id="username" name="username" value="{{ user.username }}" required>
+                </div>
+
+                <div>
+                    <label for="email">Email:</label>
+                    <input type="email" id="email" name="email" value="{{ user.email }}" required>
+                </div>
+
+                <div>
+                    <label for="bio">Bio:</label>
+                    <textarea id="bio" name="bio" rows="4" required>{{ user.bio }}</textarea>
+                </div>
+
+                <div>
+                    <label for="photo1">Update Profile Photo:</label>
+                    <input type="file" id="photo1" name="photo1">
+                </div>
+
+                <div class="song-list">
+                    <label for="songs">Favorite Songs (5 max):</label>
+                    {% for song in user.songs %}
+                        <div class="song-card">
+                            <input type="text" name="songs" value="{{ song }}" placeholder="Song Title" required>
+                        </div>
+                    {% endfor %}
+
+                    {% for i in range(user.songs|length, 5) %}
+                        <div class="song-card">
+                            <input type="text" name="songs" placeholder="Song Title">
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <button type="submit">Update Profile</button>
+            </form>
+        </div>
+
+        <div class="dashboard-link">
+            <a href="/dashboard">Go to Dashboard</a>
+        </div>
+
+        <div class="logout">
+            <a href="{{ url_for('logout') }}" class="logout-button">Logout</a>
+        </div>
+    </div>
+</body>
+</html>

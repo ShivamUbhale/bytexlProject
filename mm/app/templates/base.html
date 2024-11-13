@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MusicMatch</title>
+    <style>
+        /* Internal CSS */
+        body {
+            font-family: 'Comic Sans MS', cursive, sans-serif; /* Funky font */
+            margin: 0;
+            padding: 0;
+            background-color:#ff5f7e, #ff9966, #ffcc66, #66ccff, #9b66ff; /* Soft light green background */
+            animation: gradientAnimation 8s ease infinite;
+            color: #333;
+        }
+        @keyframes gradientAnimation {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+        header {
+            background: linear-gradient(90deg,#ff5f7e, #ff9966, #ffcc66, #66ccff, #9b66ff);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+        }
+        nav {
+            display: flex;
+            justify-content: center;
+            background-color: #ffffff;
+            border-bottom: 2px solid #ff6f61; /* Accent color in light green */
+        }
+        nav a {
+            flex: 1;
+            padding: 15px;
+            text-decoration: none;
+            color: #333;
+            text-align: center;
+            transition: background-color 0.3s, color 0.3s;
+            font-weight: bold;
+        }
+        nav a:hover {
+            background-color: #e8f5e9; /* Hover effect matching the light green theme */
+            color: #1b5e20; /* Darker green for better visibility */
+        }
+        #content {
+            padding: 20px;
+            text-align: center;
+            font-size: 18px;
+            color: #333;
+        }
+        footer {
+            background: linear-gradient(90deg,#ff5f7e, #ff9966, #ffcc66, #66ccff, #9b66ff);
+            color: white;
+            padding: 10px;
+            text-align: center;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    Welcome to MusicMatch
+</header>
+
+<nav>
+    <a href="/dashboard">Dashboard</a>
+    <a href="/profile">My Profile</a>
+    <a href="/logout">Logout</a>
+</nav>
+
+<div id="content">
+    {% block content %}{% endblock %}
+</div>
+
+<footer>
+    © 2024 MusicMatch
+</footer>
+
+</body>
+</html>

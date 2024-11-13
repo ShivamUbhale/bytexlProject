@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Match Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(45deg, #ff5f7e, #ff9966, #ffcc66, #66ccff, #9b66ff);
+            background-size: 400% 400%;
+            animation: gradientAnimation 8s ease infinite;
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+
+        @keyframes gradientAnimation {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 30px auto;
+            background-color: white;
+            border-radius: 16px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+            padding: 25px;
+        }
+
+        h2 {
+            text-align: center;
+            font-size: 2rem;
+            color: #ff6f61;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .profile-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+        }
+
+        .profile-header a {
+            color: #ff6f61;
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .profile-header a:hover {
+            text-decoration: underline;
+        }
+
+        .match-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .match-card {
+            background-color: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+        }
+
+        .match-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .match-card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .match-card h3 {
+            margin: 10px;
+            font-size: 1.25rem;
+            color: #ff6f61;
+        }
+
+        .match-card p {
+            margin: 0 10px 20px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .match-card button {
+            display: block;
+            width: calc(100% - 20px);
+            margin: 10px;
+            background-color: #ff6f61;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            padding: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .match-card button:hover {
+            background-color: #d32f2f;
+        }
+
+        .match-request {
+            background-color: #f8f8f8;
+            border-left: 6px solid #ff6f61;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .match-request p {
+            margin: 0;
+            font-size: 16px;
+            color: #444;
+        }
+
+        .button-container {
+            display: flex;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .button-container button {
+            flex: 1;
+            padding: 10px;
+            font-size: 16px;
+            background-color: #ff6f61;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .button-container button:hover {
+            background-color: #d32f2f;
+        }
+
+        .chat-link {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .chat-link a {
+            color: #ff6f61;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        .chat-link a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <!-- Profile Header with "Back to Profile" Link -->
+    <div class="profile-header">
+        <h2>Match Dashboard</h2>
+        <a href="/profile">Back to Profile</a>
+    </div>
+
+    <!-- View other profiles and Send Match Requests -->
+    <h3>Other Profiles</h3>
+    <div class="match-cards">
+        {% for user in users %}
+            <div class="match-card">
+                <img src="{{ url_for('uploaded_file', filename=user.photo1) }}" alt="Profile Photo">
+                <h3>{{ user.username }}</h3>
+                <p>{{ user.bio }}</p>
+                <button onclick="sendMatchRequest('{{ user._id }}')">Send Match Request</button>
+            </div>
+        {% endfor %}
+    </div>
+
+    <!-- Incoming Match Requests Section -->
+    <h3>Incoming Match Requests</h3>
+    <div>
+        {% for request in match_requests %}
+            <div class="match-request">
+                <p>{{ request.sender_username }} sent you a match request!</p>
+                <div class="button-container">
+                    <button onclick="acceptMatch('{{ request._id }}', '{{ request.sender_id }}')">Accept</button>
+                    <button onclick="declineMatch('{{ request._id }}')">Decline</button>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    <!-- Chat Link -->
+    <div class="chat-link">
+        <p>If you matched with someone, you can chat with them by clicking below!</p>
+        <a href="/chat">Go to Chat</a>
+    </div>
+</div>
+
+<script>
+    function sendMatchRequest(userId) {
+        fetch('/send-match-request', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ userId: userId })
+        }).then(response => {
+            if (response.ok) {
+                alert('Match request sent!');
+            } else {
+                alert('Failed to send match request.');
+            }
+        }).catch(error => {
+            console.error('Error sending match request:', error);
+        });
+    }
+
+    function acceptMatch(requestId, senderId) {
+        fetch('/accept-match-request', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ requestId: requestId })
+        }).then(response => {
+            if (response.ok) {
+                alert('Match accepted!');
+                window.location.href = `/chat/${senderId}`;
+            } else {
+                alert('Failed to accept the match request.');
+            }
+        }).catch(error => {
+            console.error('Error accepting match request:', error);
+        });
+    }
+
+    function declineMatch(requestId) {
+        fetch('/decline-match-request', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ requestId: requestId })
+        }).then(response => {
+            if (response.ok) {
+                alert('Match request declined!');
+            } else {
+                alert('Failed to decline the match request.');
+            }
+        }).catch(error => {
+            console.error('Error declining match request:', error);
+        });
+    }
+</script>
+</body>
+</html>
